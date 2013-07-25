@@ -1,0 +1,12 @@
+---
+layout: post
+title: "怎样获得root密码"
+date: 2013-07-25 15:10
+comments: true
+categories: 
+---
+如果机器在你手中并且是用grub启动的,那么这一切就很简单。
+在启动的时候，在boot kernel的option里加入“rw init=/bin/bash”
+
+确定回车，你会发现自己已经有root权限了，这时候你就可以更改root密码了。
+> \# passwd root
