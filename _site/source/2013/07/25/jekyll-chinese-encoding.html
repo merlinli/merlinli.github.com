@@ -1,0 +1,15 @@
+<p>首先你的英文编写必须完全正确。 其次你的文件必须是&#8221;utf-8 without BOM&#8221; 而不仅仅是utf-8. 在windows下utf-8文件都会被加上BOM头。一些编辑软件可以做到这点，比如notepad++,MarkdownPad等。 如果编码正确了，还是会报错：</p>
+
+<blockquote>
+<p>Liquid error: incompatible character encodings: UTF-8 and IBM437”</p>
+</blockquote>
+
+<p>这是因为你的控制台不能使用UTF-8,比如我使用的是win7的powershell. 解决办法是更改控制台编码： 打开powershell 直接输入</p>
+
+<blockquote>
+<p>chcp 65001</p>
+</blockquote>
+
+<p>chcp ：更改字码页<br />65001 ：UTF8</p>
+
+<p>MORE:<a href='http://zh.wikipedia.org/wiki/%E4%BB%A3%E7%A0%81%E9%A1%B5' title='代码页'>代码页 wiki</a></p>

@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[]]></title>
+  <link href="/atom.xml" rel="self"/>
+  <link href="/"/>
+  <updated>2013-09-24T19:14:50+08:00</updated>
+  <id>/</id>
+  <author>
+    <name><![CDATA[]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[用net-snmp监控特点的网卡]]></title>
+    <link href="/source/2013/09/24/snmp-monitor-special-interface.html"/>
+    <updated>2013-09-24T17:15:00+08:00</updated>
+    <id>/source/2013/09/24/snmp-monitor-special-interface</id>
+    <content type="html"><![CDATA[<h1 id='netsnmp'>用net-snmp只监控特定的网卡</h1>
+
+<p>net-snmp的监控网卡的默认配置是监控所有的网卡，所以有些你不用的网卡仍然会发送trap，这会给你造成困扰<br />默认配置： <br />如果配置文件里是</p>
+
+<pre><code>linkUpDownNotifications yes</code></pre>
+
+<p>等效于下面的配置</p>
+
+<pre><code>notificationEvent  linkUpTrap    linkUp   ifIndex ifAdminStatus ifOperStatus  
+notificationEvent  linkDownTrap  linkDown ifIndex ifAdminStatus ifOperStatus  
+
+monitor  -u cjslyxz -r 600 -e linkUpTrap   &quot;Generate linkUp&quot; ifOperStatus != 2
+monitor  -u cjslyxz -r 600 -e linkDownTrap &quot;Generate linkDown&quot; ifOperStatus == 2</code></pre>
+
+<p>这个是监控所有的网卡的，即使那个网卡被你用“ifconfig”之类的命令disable掉了，它仍然会发送trap.<br />可惜net-snmp不支持&#8221;ifOperStatus == 2 And ifAdminStatus ！= 2 ”这样的表达式。<br />但是我们仍然有两种解决方案。</p>
+
+<h2 id='id4'>方案一</h2>
+
+<p>修改配置如下</p>
+
+<pre><code>notificationEvent  eth0_linkUpTrap    linkUp   ifIndex.2 ifAdminStatus.2 ifOperStatus.2 ifName.2 ifDescr.2
+notificationEvent  eth0_linkDownTrap  linkDown ifIndex.2 ifAdminStatus.2 ifOperStatus.2 ifName.2 ifDescr.2
+
+monitor -u cjslyxz -t -r 600 -e eth0_linkUpTrap   &quot;eth0 linkUp&quot;  -I ifOperStatus.2 != 2
+monitor -u cjslyxz -t -r 600 -e eth0_linkDownTrap &quot;eth0 linkDown&quot;  -I ifOperStatus.2 == 2</code></pre>
+
+<p>我们显式使用 “-I”选项表示OID是精确匹配的，那我们是怎样知道这个OID是关联哪个网卡的呢？<br />用命令</p>
+
+<pre><code>snmpwalk -v 2c localhost ifDescr
+
+.1.3.6.1.2.1.2.2.1.2.1 = STRING: lo
+.1.3.6.1.2.1.2.2.1.2.2 = STRING: eth0
+.1.3.6.1.2.1.2.2.1.2.4 = STRING: eth1</code></pre>
+
+<p>IfOperStatus和ifDescr都是ifEntry的成员，每个ifEntry对应一个interface(网卡)，所以ifOperStaus.2肯定就是eth0的operrate状态。所以上面的配置就是只关心eth0的状态，只要eth0网线断了就会发送trap.<br /><img alt='IfEntry' src='C:\Users\emenlii\Desktop\Unnamed.jpg' /></p>
+
+<h2 id='id5'>方案二</h2>
+
+<p>从驱动中把这个网卡禁用掉</p>
+
+<p>- 显示你的驱动所能识别的网卡的名字</p>
+
+<pre><code>	# ls -l /sys/bus/pci/drivers/bnx2 
+	total 0
+	lrwxrwxrwx 1 root root    0 Sep 24 11:34 0000:02:00.0 -&gt; ../../../../devices/pci0000:00/0000:00:1c.0/0000:02:00.0
+	lrwxrwxrwx 1 root root    0 Sep 24 11:34 0000:02:00.1 -&gt; ../../../../devices/pci0000:00/0000:00:1c.0/0000:02:00.1
+	# ls -Ll /sys/bus/pci/drivers/bnx2/0000:02:00.0/net
+	total 0
+	drwxr-xr-x 4 root root 0 Sep 24 11:34 eth0</code></pre>
+
+<p>从上面的输出可以看到”0000:02:00.0“ 是和 “eth0“相对应的。</p>
+
+<p>- 从驱动中禁用这个网卡</p>
+
+<pre><code>	echo &quot;0000:02:00.0&quot;&quot; &gt;/sys/bus/pci/drivers/bnx2/unbind</code></pre>
+
+<p>如果机器重启的话，这个网卡会被重新识别。如果想不重启再重新用这个网卡，用下面的命令：</p>
+
+<pre><code>echo &quot;0000:02:00.0&quot;&quot; &gt;/sys/bus/pci/drivers/bnx2/bind</code></pre>
+
+<p>其实如果你看net-snmp的代码，operstaus 和adminstatus的值都是从调用函数“ioctl”带着“SIOCGIFFLAGS”参数从驱<br />动中获取的。如果设备是状态是“IFF_UP”那就设adminstatus=up, 如果是“IFF_RUNNING” 那就设operstaus=up,mib里<br />描述的其他状态其实都没处理。</p>
+
+<p>代码：</p>
+
+<pre><code>if(ifentry-&gt;os_flags &amp; IFF_UP) {
+        ifentry-&gt;admin_status = IFADMINSTATUS_UP;
+        if(ifentry-&gt;os_flags &amp; IFF_RUNNING)
+            ifentry-&gt;oper_status = IFOPERSTATUS_UP;
+        else
+            ifentry-&gt;oper_status = IFOPERSTATUS_DOWN;
+    }
+    else {
+        ifentry-&gt;admin_status = IFADMINSTATUS_DOWN;
+        ifentry-&gt;oper_status = IFOPERSTATUS_DOWN;
+    }</code></pre>
+
+<p>&#8220;ifconfig down&#8221;命令只会清除“IFF_UP”标志位<br />“ifconfig up”命令会设置“IFF_UP”标志位</p>
+
+<p>如果插上网线，可以发送接收数据包，则设置“IFF_RUNNING”标志位。</p>
+
+<p>所以所有出现在ifconfig里的网卡“ifAdminStatus=up”，没插网线<br />的网卡“ifOperStatus=down”.还有个规则就是如果“ifAdminStatus=down”<br />则对应网卡的“ifOperStatus=down”。</p>]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[GDB 调试mysql cluster 代码]]></title>
+    <link href="/source/2013/08/15/build-and-debug-mysql-source-code.html"/>
+    <updated>2013-08-15T14:40:00+08:00</updated>
+    <id>/source/2013/08/15/build-and-debug-mysql-source-code</id>
+    <content type="html"><![CDATA[<pre><code>1.下载code
+2.编译，安装
+3.配置
+4.调试</code></pre>
+
+<h2 id='1code'>1.下载code</h2>
+
+<p>download link <a href='http://dev.mysql.com/downloads/cluster/#downloads' title='mysql cluster soure code'>http://dev.mysql.com/downloads/cluster/#downloads</a> 其实就是platform选择source code 就可以了。</p>
+
+<p>这种方式只能下载最新的的code，如果你要下载特定的分支，要下载 Bazaar，这个是mysql的分支管理软件。 详细：<br /><a href='http://dev.mysql.com/tech-resources/articles/getting-started-with-bazaar-for-mysql.html' title='getting-started-with-bazaar-for-mysql'>getting-started-with-bazaar-for-mysql.html</a></p>
+
+<h2 id='2'>2.编译，安装</h2>
+
+<p>不同版本可能编译方式不同，所以最好找到编译的说明文件，代码下载好了在./BUILD目录下有个README 文件。<br />你如果要调试的话，肯定是要用debug方式编译。</p>
+
+<p>对于 mysql-cluster-7.3.2版本 <br />编译</p>
+
+<p>&gt;#cd ./BUILD<br /> &gt;#cmake -DWITH_DEBUG=1 -DCMAKE_INSTALL_PREFIX=/将来默认安装目录 /home/workspace/mysql-cluster-gpl-7.3.2/ <br /> <strong>Note</strong>：<br /> 这个命令主要是生成makefile,如果缺少对应的工具自己安装，比如我新装的机器，缺少cmake， 自己下个源码包编译，安装下就 可以，jdk的版本至少是要1.6.1。设定好$JAVA_HOME,并将之加入到$PATH. <br /> WITH_DBUG=1 表示是DEBUG编译<br /> CMAKE_INSTALL_PREFIX= 目录， 表示将来软件安装的默认目录</p>
+
+<p>&gt;#make<br /> &gt;&#8230;&#8230;<br /> &gt;<span>100%</span> Built target my_safe_process <br /> 编译完之后最后一句</p>
+
+<p>安装 &gt;#make install<br /> 如果你在cmake阶段没有指定CMAKE_INSTALL_PREFIX 的值，那它的默认安装目录就是/usr/local/mysql. 这个目录会写死在各种脚本里，特别要注意。</p>
+
+<h2 id='3'>3.配置</h2>
+
+<pre><code># groupadd mysql
+# useradd -r -g mysql mysql
+cd 你的安装目录
+# chown -R mysql .
+# chgrp -R mysql .
+# scripts/mysql_install_db --user=mysql  //会在当前目录下生成默认配置文件my.cnf
+# chown -R root .
+# chown -R mysql data
+# chown mysql my.cnf  </code></pre>
+
+<p>事实上这些初始化步骤可以很清楚的在安装目录下INSTALL-BINARY里看到。</p>
+
+<h3 id='id1'>配置文件修改</h3>
+
+<pre><code>&gt;# vi my.cnf </code></pre>
+
+<p>增加以下内容：</p>
+
+<pre><code>basedir = /home/emenlii/debug-ndb
+datadir = /home/emenlii/debug-ndb/data
+socket = /home/emenlii/debug-ndb/run/mysql.sock
+log-error = /home/emenlii/debug-ndb/log/error.log
+log_slow_queries = /home/emenlii/debug-ndb/log/slow.log</code></pre>
+
+<p>Note：<br /> 如果你的安装目录跟我不一样，可以用以下的vim命令做个简单的替换。 :%s/\/home\/mysql\/mysql/\/home\/emenlii\/debug-ndb/g 这件话的意思是全文搜索 将字符串“/home/mysql/mysql” 替换为 “/home/emenlii/debug-ndb” 因为我拷贝的是别人的配置文件，别人的安装目录是“/home/mysql/mysql”<br /> “/home/emenlii/debug-ndb”是我的安装目录。 <br /> “\/” 第一个反斜杠是转义字符用。</p>
+
+<pre><code>#mkdir log run tmp</code></pre>
+
+<h2 id='id2'>启动</h2>
+
+<h5 id='1'>1.直接启动</h5>
+
+<pre><code># ./bin/mysqld --basedir=/home/emenlii/debug-ndb/ --datadir=/home/emenlii/debug-ndb/data/ --user=mysql &amp;  </code></pre>
+
+<p>或者</p>
+
+<h5 id='2mysqld_safe'>2.mysqld_safe</h5>
+
+<pre><code>#./bin/mysqld_safe&amp;  
+ps -elf|grep mysql  
+4 S root      2383  4975  0  80   0 -  2927 wait   14:13 pts/0    00:00:00 /bin/sh ./bin/mysqld_safe  
+4 S mysql     2467  2383  0  80   0 - 122398 -     14:13 pts/0    00:00:00 /home/emenlii/debug-ndb/bin/mysqld --basedir=/home/emenlii/debug-ndb --datadir=/home/emenlii/debug-ndb/data --plugin-dir=/home/emenlii/debug-ndb/lib/plugin --user=mysql --log-error=/home/emenlii/debug-ndb/data/linux-50.err --pid-file=/home/emenlii/debug-ndb/data/linux-50.pid  </code></pre>
+
+<h3 id='mysql'>打开mysql客户端</h3>
+
+<pre><code>#./bin/mysql
+mysql&gt; show databases;	  
++--------------------+   
+| Database           |  
++--------------------+  
+| information_schema |  
+| mysql              |  
+| performance_schema |    
+| test               |  
++--------------------+  </code></pre>
+
+<p>4 rows in set (0.00 sec)</p>
+
+<h2 id='id3'>调试</h2>
+
+<pre><code># ./bin/mysqladmin shutdown //先关闭进程
+# gdb -args /home/emenlii/debug-ndb/bin/mysqld --basedir=/home/emenlii/debug-ndb/ --datadir=/home/emenlii/debug-ndb/data/ --user=mysql  
+然后加断点，然后就可以在GDB里 run, 另开一个窗口操作mysql客户端</code></pre>]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[jekyll在windows下中文问题]]></title>
+    <link href="/source/2013/07/25/jekyll-chinese-encoding.html"/>
+    <updated>2013-07-25T17:01:00+08:00</updated>
+    <id>/source/2013/07/25/jekyll-chinese-encoding</id>
+    <content type="html"><![CDATA[<p>首先你的英文编写必须完全正确。 其次你的文件必须是&#8221;utf-8 without BOM&#8221; 而不仅仅是utf-8. 在windows下utf-8文件都会被加上BOM头。一些编辑软件可以做到这点，比如notepad++,MarkdownPad等。 如果编码正确了，还是会报错：</p>
+
+<blockquote>
+<p>Liquid error: incompatible character encodings: UTF-8 and IBM437”</p>
+</blockquote>
+
+<p>这是因为你的控制台不能使用UTF-8,比如我使用的是win7的powershell. 解决办法是更改控制台编码： 打开powershell 直接输入</p>
+
+<blockquote>
+<p>chcp 65001</p>
+</blockquote>
+
+<p>chcp ：更改字码页<br />65001 ：UTF8</p>
+
+<p>MORE:<a href='http://zh.wikipedia.org/wiki/%E4%BB%A3%E7%A0%81%E9%A1%B5' title='代码页'>代码页 wiki</a></p>]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[怎样获得root密码]]></title>
+    <link href="/source/2013/07/25/how-to-get-root-passwd.html"/>
+    <updated>2013-07-25T15:10:00+08:00</updated>
+    <id>/source/2013/07/25/how-to-get-root-passwd</id>
+    <content type="html"><![CDATA[<p>如果机器在你手中并且是用grub启动的,那么这一切就很简单。 在启动的时候，在boot kernel的option里加入“rw init=/bin/bash”</p>
+
+<p>确定回车，你会发现自己已经有root权限了，这时候你就可以更改root密码了。</p>
+
+<blockquote>
+<p># passwd root</p>
+</blockquote>]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Hellow World]]></title>
+    <link href="/source/2012/11/25/hellow-world.html"/>
+    <updated>2012-11-25T18:49:00+08:00</updated>
+    <id>/source/2012/11/25/hellow-world</id>
+    <content type="html"><![CDATA[<p>Hellow World! <br />真有人这么蛋疼的写博客么？！</p>]]></content>
+  </entry>
+  
+</feed>
