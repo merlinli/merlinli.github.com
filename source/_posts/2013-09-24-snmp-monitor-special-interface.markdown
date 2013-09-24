@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "用net-snmp监控特点的网卡"
+title: "用net-snmp监控特定的网卡"
 date: 2013-09-24 17:15
 comments: true
 categories: net-snmp
