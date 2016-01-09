@@ -1,144 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
 
-<!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <title>Rollstone</title>
-  <meta name="author" content="Merlin">
-
-  
-  <meta name="description" content="首先要明白的是sizeof 是一个操作符，而不是一个函数。 用法：
-sizeof( type ) (1) sizeof expression (2) 返回值都是std::size_t. 第一种用法是返回类型所占的字节数，对于参数是类型的一定要加括号
-第二种是返回表达式所返回的对象的所占的字节数， &hellip;">
-  
-
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  
-  <link rel="canonical" href="http://merlinli.github.com/">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/atom.xml" rel="alternate" title="Rollstone" type="application/atom+xml">
-  <!-- font-family: 'Knewave', cursive; -->
-<link href='http://fonts.googleapis.com/css?family=Knewave' rel='stylesheet' type='text/css'>
-<!-- font-family: 'Cantata One', serif; -->
-<link href='http://fonts.googleapis.com/css?family=Cantata+One' rel='stylesheet' type='text/css'>
-
-
-<!-- mathjax config similar to math.stackexchange -->
-<!-- Add by merlin -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-    tex2jax: {
-      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-      processEscapes: true
-    }
-  });
-</script>
-
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-      }
-    });
-</script>
-
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for(i=0; i < all.length; i += 1) {
-            all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-    });
-</script>
-
-<script type="text/javascript"
-   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- Add by merlin ended -->
-  
-
-</head>
-
-<body   >
-  <header role="banner"><hgroup>
-  <h1>
-      <a href="/">Rollstone</a>
-      
-        <span>A rolling stone gathers no moss.</span>
-      
-  </h1>
-</hgroup>
-
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="http://google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:merlinli.github.com" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">Home</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-</ul>
-
-</nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
-  
-  
-  
-    <article>
-      
-  <header>
+  <title><![CDATA[Rollstone]]></title>
+  <link href="http://merlinli.github.com/atom.xml" rel="self"/>
+  <link href="http://merlinli.github.com/"/>
+  <updated>2016-01-09T16:23:51+08:00</updated>
+  <id>http://merlinli.github.com/</id>
+  <author>
+    <name><![CDATA[Merlin]]></name>
     
-      <h1 class="entry-title"><a href="/blog/2016/01/07/sizeof-in-c-plus-plus/">C和C++里的sizeof</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
 
   
-
-
-<time datetime="2016-01-07T20:03:00+08:00" pubdate data-updated="true">Jan 7<span>th</span>, 2016</time>
-        
-         | <a href="/blog/2016/01/07/sizeof-in-c-plus-plus/#disqus_thread">Comments</a>
-        
-        
-          | 
-
-
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>首先要明白的是sizeof 是一个操作符，而不是一个函数。 </p>
+  <entry>
+    <title type="html"><![CDATA[C和C++里的sizeof]]></title>
+    <link href="http://merlinli.github.com/blog/2016/01/07/sizeof-in-c-plus-plus/"/>
+    <updated>2016-01-07T20:03:00+08:00</updated>
+    <id>http://merlinli.github.com/blog/2016/01/07/sizeof-in-c-plus-plus</id>
+    <content type="html"><![CDATA[<p>首先要明白的是sizeof 是一个操作符，而不是一个函数。 </p>
 
 <hr />
 <p><strong>用法</strong>：<br />
@@ -179,49 +59,15 @@ sizeof( type ) (1) sizeof expression (2) 返回值都是std::size_t. 第一种�
 &gt; 
 &gt; sizeof “c”     // 2 ,字符和占位符加起来是两个</p>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/15/maxsubsequencesum/">最大子序和的联机解法</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-15T17:42:00+08:00" pubdate data-updated="true">Dec 15<span>th</span>, 2015</time>
-        
-         | <a href="/blog/2015/12/15/maxsubsequencesum/#disqus_thread">Comments</a>
-        
-        
-          | 
-
-
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2 id="section">最大子序和的问题</h2>
+  <entry>
+    <title type="html"><![CDATA[最大子序和的联机解法]]></title>
+    <link href="http://merlinli.github.com/blog/2015/12/15/maxsubsequencesum/"/>
+    <updated>2015-12-15T17:42:00+08:00</updated>
+    <id>http://merlinli.github.com/blog/2015/12/15/maxsubsequencesum</id>
+    <content type="html"><![CDATA[<h2 id="section">最大子序和的问题</h2>
 
 <h4 id="section-1">问题描述：</h4>
 <p>给定整数A<sub>1</sub>,  A<sub>2</sub> ,…  A<sub>N</sub>, 求 <script type="math/tex">\sum_{k=i}^{j}A_k</script>的最大值（<strong>为方便起见，如果所有整数为负数，则最大子序和为0</strong>）</p>
@@ -265,8 +111,8 @@ A[0]~A[2] 累加为 4， 遇到A[3]=-100，序列和小于0，CurSum从0开始�
 
 <script type="math/tex; mode=display">\sum_{k=i}^{j-1}A_k >=0</script>
 
-<script type="math/tex; mode=display">% <![CDATA[
-\sum_{k=i}^{j}A_k <0  %]]></script>
+<script type="math/tex; mode=display">% &lt;![CDATA[
+\sum_{k=i}^{j}A_k <0  %]]&gt;</script>
 
 <p>也就是说A[j] 是使<script type="math/tex">\sum_{k=i}^j</script>为负的那个元素。<br />
 根据定理1有如下推论：
@@ -305,55 +151,15 @@ s.setAttribute('data-timestamp', +new Date());
 </script>
 
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/09/24/snmp-monitor-special-interface/">用net-snmp监控特定的网卡</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-09-24T17:15:00+08:00" pubdate data-updated="true">Sep 24<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/09/24/snmp-monitor-special-interface/#disqus_thread">Comments</a>
-        
-        
-          | 
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/net-snmp/'>net-snmp</a>
-  
-</span>
-
-
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>net-snmp的监控网卡的默认配置是监控所有的网卡，所以有些你不用的网卡仍然会发送trap，这会给你造成困扰<br />
+  <entry>
+    <title type="html"><![CDATA[用net-snmp监控特定的网卡]]></title>
+    <link href="http://merlinli.github.com/blog/2013/09/24/snmp-monitor-special-interface/"/>
+    <updated>2013-09-24T17:15:00+08:00</updated>
+    <id>http://merlinli.github.com/blog/2013/09/24/snmp-monitor-special-interface</id>
+    <content type="html"><![CDATA[<p>net-snmp的监控网卡的默认配置是监控所有的网卡，所以有些你不用的网卡仍然会发送trap，这会给你造成困扰<br />
 默认配置： <br />
 如果配置文件里是   </p>
 
@@ -454,55 +260,15 @@ monitor -u cjslyxz -t -r 600 -e eth0_linkDownTrap "eth0 linkDown"  -I ifOperStat
 的网卡“ifOperStatus=down”.还有个规则就是如果“ifAdminStatus=down”<br />
 则对应网卡的“ifOperStatus=down”。</p>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/08/15/build-and-debug-mysql-source-code/">GDB 调试mysql Cluster 代码</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-08-15T14:40:00+08:00" pubdate data-updated="true">Aug 15<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/08/15/build-and-debug-mysql-source-code/#disqus_thread">Comments</a>
-        
-        
-          | 
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/mysql/'>mysql</a>
-  
-</span>
-
-
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><pre><code>1.下载code
+  <entry>
+    <title type="html"><![CDATA[GDB 调试mysql cluster 代码]]></title>
+    <link href="http://merlinli.github.com/blog/2013/08/15/build-and-debug-mysql-source-code/"/>
+    <updated>2013-08-15T14:40:00+08:00</updated>
+    <id>http://merlinli.github.com/blog/2013/08/15/build-and-debug-mysql-source-code</id>
+    <content type="html"><![CDATA[<pre><code>1.下载code
 2.编译，安装
 3.配置
 4.调试
@@ -609,49 +375,15 @@ mysql&gt; show databases;
 然后加断点，然后就可以在GDB里 run, 另开一个窗口操作mysql客户端
 </code></pre>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/07/25/jekyll-chinese-encoding/">Jekyll在windows下中文问题</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-25T17:01:00+08:00" pubdate data-updated="true">Jul 25<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/07/25/jekyll-chinese-encoding/#disqus_thread">Comments</a>
-        
-        
-          | 
-
-
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>首先你的英文编写必须完全正确。
+  <entry>
+    <title type="html"><![CDATA[jekyll在windows下中文问题]]></title>
+    <link href="http://merlinli.github.com/blog/2013/07/25/jekyll-chinese-encoding/"/>
+    <updated>2013-07-25T17:01:00+08:00</updated>
+    <id>http://merlinli.github.com/blog/2013/07/25/jekyll-chinese-encoding</id>
+    <content type="html"><![CDATA[<p>首先你的英文编写必须完全正确。
 其次你的文件必须是”utf-8 without BOM” 而不仅仅是utf-8.
 在windows下utf-8文件都会被加上BOM头。一些编辑软件可以做到这点，比如notepad++,MarkdownPad等。
 如果编码正确了，还是会报错：
@@ -667,189 +399,30 @@ mysql&gt; show databases;
 
 <p>MORE:<a href="http://zh.wikipedia.org/wiki/%E4%BB%A3%E7%A0%81%E9%A1%B5" title="代码页">代码页 wiki</a></p>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/07/25/how-to-get-root-passwd/">怎样获得root密码</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-25T15:10:00+08:00" pubdate data-updated="true">Jul 25<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/07/25/how-to-get-root-passwd/#disqus_thread">Comments</a>
-        
-        
-          | 
-
-
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>如果机器在你手中并且是用grub启动的,那么这一切就很简单。
+  <entry>
+    <title type="html"><![CDATA[怎样获得root密码]]></title>
+    <link href="http://merlinli.github.com/blog/2013/07/25/how-to-get-root-passwd/"/>
+    <updated>2013-07-25T15:10:00+08:00</updated>
+    <id>http://merlinli.github.com/blog/2013/07/25/how-to-get-root-passwd</id>
+    <content type="html"><![CDATA[<p>如果机器在你手中并且是用grub启动的,那么这一切就很简单。
 在启动的时候，在boot kernel的option里加入“rw init=/bin/bash”</p>
 
 <p>确定回车，你会发现自己已经有root权限了，这时候你就可以更改root密码了。
 &gt; # passwd root</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/11/25/hellow-world/">Hellow World</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-11-25T18:49:00+08:00" pubdate data-updated="true">Nov 25<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/11/25/hellow-world/#disqus_thread">Comments</a>
-        
-        
-          | 
-
-
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Hellow World! <br />
+  <entry>
+    <title type="html"><![CDATA[Hellow World]]></title>
+    <link href="http://merlinli.github.com/blog/2012/11/25/hellow-world/"/>
+    <updated>2012-11-25T18:49:00+08:00</updated>
+    <id>http://merlinli.github.com/blog/2012/11/25/hellow-world</id>
+    <content type="html"><![CDATA[<p>Hellow World! <br />
 真有人这么蛋疼的写博客么？！</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
-<aside class="sidebar">
-  
-    <section class="first odd">
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2016/01/07/sizeof-in-c-plus-plus/">C和C++里的sizeof</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/15/maxsubsequencesum/">最大子序和的联机解法</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/09/24/snmp-monitor-special-interface/">用net-snmp监控特定的网卡</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/08/15/build-and-debug-mysql-source-code/">GDB 调试mysql cluster 代码</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/25/jekyll-chinese-encoding/">jekyll在windows下中文问题</a>
-      </li>
-    
-  </ul>
-</section>
-
-
-
-
-
-
-  
-</aside>
-
-    </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2016 - Merlin -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> and <a href="https://github.com/gluttony/object-octopress-theme">Object</a></span>
-</p>
-
-</footer>
-  
-
-<script type="text/javascript">
-      var disqus_shortname = 'merlinli';
-      
-        
-        var disqus_script = 'count.js';
-      
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-</script>
-
-
-
-
-
-
-
-  <script type="text/javascript">
-    (function(){
-      var twitterWidgets = document.createElement('script');
-      twitterWidgets.type = 'text/javascript';
-      twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
-      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
-    })();
-  </script>
-
-
-
-
-
-</body>
-</html>
+</feed>

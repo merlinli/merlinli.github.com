@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>最大子序和的联机解法 - Rollstone</title>
+  <meta name="author" content="Merlin">
+
+  
+  <meta name="description" content="最大子序和的问题 问题描述：
+给定整数A1, A2 ,… AN, 求 的最大值（为方便起见，如果所有整数为负数，则最大子序和为0） 下面直接给出最后的算法，直接的解法可以看其它人的博客 int MaxSubSequenceSum(const int A[], int N )
+{ int &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://merlinli.github.com/blog/2015/12/15/maxsubsequencesum/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Rollstone" type="application/atom+xml">
+  <!-- font-family: 'Knewave', cursive; -->
+<link href='http://fonts.googleapis.com/css?family=Knewave' rel='stylesheet' type='text/css'>
+<!-- font-family: 'Cantata One', serif; -->
+<link href='http://fonts.googleapis.com/css?family=Cantata+One' rel='stylesheet' type='text/css'>
+
+
+<!-- mathjax config similar to math.stackexchange -->
+<!-- Add by merlin -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- Add by merlin ended -->
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1>
+      <a href="/">Rollstone</a>
+      
+        <span>A rolling stone gathers no moss.</span>
+      
+  </h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:merlinli.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">最大子序和的联机解法</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-15T17:42:00+08:00" pubdate data-updated="true">Dec 15<span>th</span>, 2015</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2 id="section">最大子序和的问题</h2>
+
+<h4 id="section-1">问题描述：</h4>
+<p>给定整数A<sub>1</sub>,  A<sub>2</sub> ,…  A<sub>N</sub>, 求 <script type="math/tex">\sum_{k=i}^{j}A_k</script>的最大值（<strong>为方便起见，如果所有整数为负数，则最大子序和为0</strong>）</p>
+
+<p>下面直接给出最后的算法，直接的解法可以看其它人的博客</p>
+
+<pre><code>int MaxSubSequenceSum(const int A[], int N )
+{
+    int CurtSum = 0;
+    int MaxSum  = 0;  
+    
+    for (int j =0; j&lt;N;j++)
+    {
+        CurtSum += A[j];
+        if(CurtSum &gt; MaxSum)   
+            MaxSum = CurSum;
+        else if( CurtSum&lt;0 )
+            CurSum = 0 ;
+	}  
+
+    return MaxSum;
+}
+</code></pre>
+
+<p>那这个算法为什么正确呢？   <br />
+假设有如下序列：  </p>
+
+<blockquote>
+  <p>3, -2 , 3 , -100 , 4 , -2  </p>
+</blockquote>
+
+<p>如果按照上面的算法，其实是计算了两个子序列<br />
+A[0]~A[2] 累加为 4， 遇到A[3]=-100，序列和小于0，CurSum从0开始重新计算，A[4]~A[5]和为2,<br />
+然后取这两个子序列大的为MaxSum。<br />
+那以A[1]为开头的子序列你一个都没算过，你怎么知道最大的不在其中呢？   </p>
+
+<p>有个关键点是：<br />
+&gt; 定理1：如果一个序列的和为负数，那么这个序列肯定不是另外一个<strong>最大子</strong>序列的前缀</p>
+
+<p>我们假设如下：   </p>
+
+<script type="math/tex; mode=display">\sum_{k=i}^{j-1}A_k >=0</script>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\sum_{k=i}^{j}A_k <0  %]]></script>
+
+<p>也就是说A[j] 是使<script type="math/tex">\sum_{k=i}^j</script>为负的那个元素。<br />
+根据定理1有如下推论：
+<strong>如果存在一个最大子序列是以A[i]开头的，那么最后一个元素的下标肯定是小于j的</strong></p>
+
+<p>假设<strong>i&lt;p&lt;j</strong></p>
+
+<p>那么我们有如下结论：  </p>
+
+<p><script type="math/tex">\sum_{k=p}^qA_k</script> （q&lt;n）   <strong>&lt;=</strong>   <script type="math/tex">\sum_{k=i}^qA_k</script> （i&lt;p,q&lt;n）  </p>
+
+<p><strong>因为i和p之间的元素和肯定是大于0的</strong>    <br />
+也就是说从p开始的任意子序和都不大于以A[i]开始并包含它的子序列的和。 <br />
+那根据前面的推论，如果有以A[i]开始的最大子序列，最后一个元素的下标识小于j的。</p>
+
+<div id="disqus_thread"></div>
+<script>
+/**
+* RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+* LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL; // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+
+s.src = '//merlinli.disqus.com/embed.js';
+
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Merlin</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-15T17:42:00+08:00" pubdate data-updated="true">Dec 15<span>th</span>, 2015</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://merlinli.github.com/blog/2015/12/15/maxsubsequencesum/" data-via="" data-counturl="http://merlinli.github.com/blog/2015/12/15/maxsubsequencesum/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/09/24/snmp-monitor-special-interface/" title="Previous Post: 用net-snmp监控特定的网卡">&laquo; 用net-snmp监控特定的网卡</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2016/01/07/sizeof-in-c-plus-plus/" title="Next Post: C和C++里的sizeof">C和C++里的sizeof &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section class="first odd">
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/01/07/sizeof-in-c-plus-plus/">C和C++里的sizeof</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/15/maxsubsequencesum/">最大子序和的联机解法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/24/snmp-monitor-special-interface/">用net-snmp监控特定的网卡</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/15/build-and-debug-mysql-source-code/">GDB 调试mysql cluster 代码</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/25/jekyll-chinese-encoding/">jekyll在windows下中文问题</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Merlin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> and <a href="https://github.com/gluttony/object-octopress-theme">Object</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'merlinli';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://merlinli.github.com/blog/2015/12/15/maxsubsequencesum/';
+        var disqus_url = 'http://merlinli.github.com/blog/2015/12/15/maxsubsequencesum/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

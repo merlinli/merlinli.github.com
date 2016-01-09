@@ -1,0 +1,390 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>GDB 调试mysql cluster 代码 - Rollstone</title>
+  <meta name="author" content="Merlin">
+
+  
+  <meta name="description" content="1.下载code
+2.编译，安装
+3.配置
+4.调试 1.下载code download link http://dev.mysql.com/downloads/cluster/#downloads
+其实就是platform选择source code 就可以了。 这种方式只能下载最新的的code， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://merlinli.github.com/blog/2013/08/15/build-and-debug-mysql-source-code/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Rollstone" type="application/atom+xml">
+  <!-- font-family: 'Knewave', cursive; -->
+<link href='http://fonts.googleapis.com/css?family=Knewave' rel='stylesheet' type='text/css'>
+<!-- font-family: 'Cantata One', serif; -->
+<link href='http://fonts.googleapis.com/css?family=Cantata+One' rel='stylesheet' type='text/css'>
+
+
+<!-- mathjax config similar to math.stackexchange -->
+<!-- Add by merlin -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- Add by merlin ended -->
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1>
+      <a href="/">Rollstone</a>
+      
+        <span>A rolling stone gathers no moss.</span>
+      
+  </h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:merlinli.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">GDB 调试mysql Cluster 代码</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-15T14:40:00+08:00" pubdate data-updated="true">Aug 15<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><pre><code>1.下载code
+2.编译，安装
+3.配置
+4.调试
+</code></pre>
+
+<h2 id="code">1.下载code</h2>
+
+<p>download link 
+<a href="http://dev.mysql.com/downloads/cluster/#downloads" title="mysql cluster soure code">http://dev.mysql.com/downloads/cluster/#downloads</a>
+其实就是platform选择source code 就可以了。</p>
+
+<p>这种方式只能下载最新的的code，如果你要下载特定的分支，要下载 Bazaar，这个是mysql的分支管理软件。
+详细：<br />
+<a href="http://dev.mysql.com/tech-resources/articles/getting-started-with-bazaar-for-mysql.html" title="getting-started-with-bazaar-for-mysql">getting-started-with-bazaar-for-mysql.html</a></p>
+
+<h2 id="section">2.编译，安装</h2>
+<p>不同版本可能编译方式不同，所以最好找到编译的说明文件，代码下载好了在./BUILD目录下有个README 文件。<br />
+你如果要调试的话，肯定是要用debug方式编译。  </p>
+
+<p>对于 mysql-cluster-7.3.2版本 <br />
+编译</p>
+
+<blockquote>
+  <p>#cd ./BUILD<br />
+#cmake -DWITH_DEBUG=1 -DCMAKE_INSTALL_PREFIX=/将来默认安装目录 /home/workspace/mysql-cluster-gpl-7.3.2/   <br />
+   <strong>Note</strong>：<br />
+             这个命令主要是生成makefile,如果缺少对应的工具自己安装，比如我新装的机器，缺少cmake，
+             自己下个源码包编译，安装下就 可以，jdk的版本至少是要1.6.1。设定好$JAVA_HOME,并将之加入到$PATH.   <br />
+             WITH_DBUG=1                      表示是DEBUG编译<br />
+			 CMAKE_INSTALL_PREFIX=  目录，     表示将来软件安装的默认目录</p>
+</blockquote>
+
+<blockquote>
+  <p>#make<br />
+……<br />
+[100%] Built target my_safe_process <br />
+   编译完之后最后一句  </p>
+</blockquote>
+
+<p>安装
+   &gt;#make install<br />
+   如果你在cmake阶段没有指定CMAKE_INSTALL_PREFIX 的值，那它的默认安装目录就是/usr/local/mysql.
+   这个目录会写死在各种脚本里，特别要注意。</p>
+
+<h2 id="section-1">3.配置</h2>
+<pre><code># groupadd mysql
+# useradd -r -g mysql mysql
+cd 你的安装目录
+# chown -R mysql .
+# chgrp -R mysql .
+# scripts/mysql_install_db --user=mysql  //会在当前目录下生成默认配置文件my.cnf
+# chown -R root .
+# chown -R mysql data
+# chown mysql my.cnf   事实上这些初始化步骤可以很清楚的在安装目录下INSTALL-BINARY里看到。 ### 配置文件修改
+&gt;# vi my.cnf  增加以下内容：  
+</code></pre>
+
+ 	basedir = /home/emenlii/debug-ndb
+<pre><code>datadir = /home/emenlii/debug-ndb/data
+socket = /home/emenlii/debug-ndb/run/mysql.sock
+log-error = /home/emenlii/debug-ndb/log/error.log
+log_slow_queries = /home/emenlii/debug-ndb/log/slow.log
+</code></pre>
+
+<p>Note：<br />
+	 如果你的安装目录跟我不一样，可以用以下的vim命令做个简单的替换。
+	:%s/\/home\/mysql\/mysql/\/home\/emenlii\/debug-ndb/g
+    这件话的意思是全文搜索 将字符串“/home/mysql/mysql” 替换为 “/home/emenlii/debug-ndb”
+    因为我拷贝的是别人的配置文件，别人的安装目录是“/home/mysql/mysql”<br />
+    “/home/emenlii/debug-ndb”是我的安装目录。 <br />
+    “\/” 第一个反斜杠是转义字符用。</p>
+
+<pre><code>#mkdir log run tmp
+</code></pre>
+
+<h2 id="section-2">启动</h2>
+<p>#####1.直接启动<br />
+	# ./bin/mysqld –basedir=/home/emenlii/debug-ndb/ –datadir=/home/emenlii/debug-ndb/data/ –user=mysql &amp;  </p>
+
+<p>或者
+#####2.mysqld_safe
+	#./bin/mysqld_safe&amp;<br />
+	ps -elf|grep mysql<br />
+	4 S root      2383  4975  0  80   0 -  2927 wait   14:13 pts/0    00:00:00 /bin/sh ./bin/mysqld_safe<br />
+	4 S mysql     2467  2383  0  80   0 - 122398 -     14:13 pts/0    00:00:00 /home/emenlii/debug-ndb/bin/mysqld –basedir=/home/emenlii/debug-ndb –datadir=/home/emenlii/debug-ndb/data –plugin-dir=/home/emenlii/debug-ndb/lib/plugin –user=mysql –log-error=/home/emenlii/debug-ndb/data/linux-50.err –pid-file=/home/emenlii/debug-ndb/data/linux-50.pid  </p>
+
+<h3 id="mysql">打开mysql客户端</h3>
+<pre><code>#./bin/mysql
+mysql&gt; show databases;	  
++--------------------+   
+| Database           |  
++--------------------+  
+| information_schema |  
+| mysql              |  
+| performance_schema |    
+| test               |  
++--------------------+   4 rows in set (0.00 sec)
+</code></pre>
+
+<h2 id="section-3">调试</h2>
+
+<pre><code># ./bin/mysqladmin shutdown //先关闭进程
+# gdb -args /home/emenlii/debug-ndb/bin/mysqld --basedir=/home/emenlii/debug-ndb/ --datadir=/home/emenlii/debug-ndb/data/ --user=mysql  
+然后加断点，然后就可以在GDB里 run, 另开一个窗口操作mysql客户端
+</code></pre>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Merlin</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-15T14:40:00+08:00" pubdate data-updated="true">Aug 15<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/mysql/'>mysql</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://merlinli.github.com/blog/2013/08/15/build-and-debug-mysql-source-code/" data-via="" data-counturl="http://merlinli.github.com/blog/2013/08/15/build-and-debug-mysql-source-code/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/07/25/jekyll-chinese-encoding/" title="Previous Post: jekyll在windows下中文问题">&laquo; jekyll在windows下中文问题</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/09/24/snmp-monitor-special-interface/" title="Next Post: 用net-snmp监控特定的网卡">用net-snmp监控特定的网卡 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section class="first odd">
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/01/07/sizeof-in-c-plus-plus/">C和C++里的sizeof</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/15/maxsubsequencesum/">最大子序和的联机解法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/24/snmp-monitor-special-interface/">用net-snmp监控特定的网卡</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/15/build-and-debug-mysql-source-code/">GDB 调试mysql cluster 代码</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/25/jekyll-chinese-encoding/">jekyll在windows下中文问题</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Merlin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> and <a href="https://github.com/gluttony/object-octopress-theme">Object</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'merlinli';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://merlinli.github.com/blog/2013/08/15/build-and-debug-mysql-source-code/';
+        var disqus_url = 'http://merlinli.github.com/blog/2013/08/15/build-and-debug-mysql-source-code/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
